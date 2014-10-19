@@ -11,12 +11,14 @@ public class ComputeMain {
 
 	/**
 	 * Program arguments:
-	 * 	ComputeMain -t <input_text_file_name> [-f | -p | -i | -e]
+	 * 	ComputeMain [-t <input_text_file_name> [-f | -p | -i | -e] [-h]] | [-d <file_for_decoding.hencoded>]
 	 * 		-t is the input text file
 	 * 		-f compute the relative frequencies
 	 * 		-p compute the probabilities 
 	 * 		-i compute the information content
 	 * 		-e compute the entropy
+	 * 		-h create the hoffman tree and serialize it to the file. Note: requires probability information
+	 * 		-d decode a file based on Hoffman encoding and generate the relevant .decoded file
 	 * */
 	private static HashMap<String, String> programParams = new HashMap<>();
 	
@@ -59,19 +61,37 @@ public class ComputeMain {
 				if ( programParams.get("t") == null)
 					throw new UserErrorException("Missing input text file for reading.");
 
-			/// compute frequency
-			if ( programParams.containsKey("f") )
-				compute.ReadInputTextFileCharacters( programParams.get("t"));
-			/// compute probability
-			if ( programParams.containsKey("p") )
-				compute.ComputeProbabilities( programParams.get("t"));
-			/// compute information
-			if ( programParams.containsKey("i") )
-				compute.ComputeInformation( programParams.get("t"));
 			/// compute entropy
 			if ( programParams.containsKey("e") ) {
 				BigDecimal entropy = compute.ComputeEntropy( programParams.get("t"));
 				System.out.println("Entropy : " + entropy);
+			}
+			/// compute information
+			else if ( programParams.containsKey("i") )
+				compute.ComputeInformation( programParams.get("t"));
+			/// compute probability
+			else if ( programParams.containsKey("p") )
+				compute.ComputeProbabilities( programParams.get("t"));
+			/// compute frequency
+			else if ( programParams.containsKey("f") )
+				compute.ReadInputTextFileCharacters( programParams.get("t"));
+			
+			if ( programParams.containsKey("h") )
+			{
+				HoffmanTree hoffmanTree = compute.CreateHoffmanTree();
+				// serialize to the binary Hoffman table file
+				hoffmanTree.Serialize( programParams.get("t"));
+				// encode the text file on the bases of the hoffmantree object to the binary file
+				hoffmanTree.Encode( programParams.get("t"));
+			}
+			else if ( programParams.containsKey("d") )
+			{
+				HoffmanTree hoffmanTree = new HoffmanTree();
+				// deserialize the Hoffman tree from file
+				System.out.println("Deserializing Hoffman tree...   ");
+				hoffmanTree.Deserialize( programParams.get("d"));
+				// decode the encoded file based on the already deserialized tree
+				hoffmanTree.Decode( programParams.get("d"));
 			}
 
 			if ( programParams.containsKey("f") || programParams.containsKey("p") || programParams.containsKey("i") || programParams.containsKey("e") )
@@ -79,7 +99,7 @@ public class ComputeMain {
 		} catch ( UserErrorException uex) {
 			System.err.println("Error: " + uex.getMessage());
 		}
-		
+		System.out.println("Program execution completed");
 	}
 
 }
