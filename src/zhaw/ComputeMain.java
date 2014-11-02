@@ -80,6 +80,7 @@ public class ComputeMain {
 			{
 				HoffmanTree hoffmanTree = compute.CreateHoffmanTree();
 				// serialize to the binary Hoffman table file
+				System.out.println(programParams.get("t"));
 				hoffmanTree.Serialize( programParams.get("t"));
 				// encode the text file on the bases of the hoffmantree object to the binary file
 				hoffmanTree.Encode( programParams.get("t"));

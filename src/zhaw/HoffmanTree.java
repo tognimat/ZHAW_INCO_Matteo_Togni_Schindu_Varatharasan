@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.io.FileWriter;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 public class HoffmanTree 
 {
 	public static final boolean LDEBUG = false;
@@ -31,6 +33,7 @@ public class HoffmanTree
 	 * 		1 is for the left node which has to have greater or equal value to the left.
 	 * 		-1 is the root node.
 	 * */
+	
 	public enum ArcType {
 	    RIGHT(0), LEFT(1), NONE(-1);
 	    private final int value;
@@ -361,7 +364,7 @@ public class HoffmanTree
 		}
 
 	}
-
+	
 	private void Encode( BufferedReader in, DataOutputStream out) throws IOException 
 	{
 		/**    ToDo: [10] Please fill after the commented lines with todo 10.1 and 10.2 the necessary code in
@@ -380,14 +383,22 @@ public class HoffmanTree
 			if ( ! hoffmanCodesCache.containsKey(c) )
 				throw new RuntimeException( "Hoffman code was not found in the cache. The cache is invalid.");
 			/** [10.1] - needs 2 lines of code using the instance "codeLeftForWritting" 
-			 * */
-			throw new NotImplementedException();
+			* */
+			codeLeftForWritting.add(hoffmanCodesCache.get(c));
+			codeLeftForWritting.writeInto(out);
+			// throw new NotImplementedException();
+
 			
-			if (LDEBUG) System.out.println("   W:   " + (char)c + " = " + hoffmanCodesCache.get( c).value);
-		}
-		/** [10.3] - needs 3 lines of code using the instance "codeLeftForWritting" 
-		 * */
-		throw new NotImplementedException();
+			
+
+			if (LDEBUG) System.out.println(" W: " + (char)c + " = " + hoffmanCodesCache.get( c).value);
+			}
+			/** [10.3] - needs 3 lines of code using the instance "codeLeftForWritting" 
+			* */
+			codeLeftForWritting.add(hoffmanCodesCache.get(hoffmanContentEOFchar));
+			codeLeftForWritting.writeInto(out);
+			codeLeftForWritting.flashAllLeftBites(out);
+			// throw new NotImplementedException();
 	}
 
 	private void BuildHoffmanCodesCache()
